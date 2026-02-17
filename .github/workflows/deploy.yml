@@ -14,6 +14,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: "npm"
 
       - run: npm ci
       - run: npm run build -- --configuration production
@@ -24,12 +25,22 @@ jobs:
           ls -la dist/* || true
           ls -la dist/*/browser || true
 
-      # AJUSTA EL path cuando veas la estructura en logs
+      - name: Detect dist folder
+        id: detect
+        run: |
+          set -e
+          if ls dist/*/browser >/dev/null 2>&1; then
+            echo "DIR=$(ls -d dist/*/browser | head -n 1)/" >> $GITHUB_OUTPUT
+          else
+            echo "DIR=$(ls -d dist/* | head -n 1)/" >> $GITHUB_OUTPUT
+          fi
+          echo "Using: ${{ steps.detect.outputs.DIR }}"
+
       - name: Deploy via rsync
         uses: burnett01/rsync-deployments@7.0.1
         with:
           switches: -avzr --delete
-          path: dist/hola-mundo-app/browser/
+          path: ${{ steps.detect.outputs.DIR }}
           remote_path: ${{ secrets.VPS_PATH }}
           remote_host: ${{ secrets.VPS_HOST }}
           remote_user: ${{ secrets.VPS_USER }}
