@@ -1,12 +1,13 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.html',
-  styleUrl: './app.css'
+  standalone: true,
+  template: `
+    <div style="text-align:center; margin-top:100px;">
+      <h1>Hola Mundo</h1>
+      <p>Desplegado con GitHub Actions</p>
+    </div>
+  `
 })
-export class App {
-  protected readonly title = signal('hola-mundo-app');
-}
+export class AppComponent {}
